@@ -2,18 +2,20 @@ from django.http import HttpResponse,JsonResponse
 from .models import Article
 import json
 # Create your views here.
+#查询模块
 def query_article(request):
     if request.method == 'GET':
         articles = {}
         query_articles = Article.objects.all()
-        print('query_articles:',query_articles)
+        # print('query_articles:',query_articles)
         for title in query_articles:
             articles[title.title] = title.status
         return JsonResponse({"status": "BS.200", "all_titles": articles, "msg": "query articles success."})
-        print("request.body", request.body)
+        # print("request.body", request.body)
     else:
         return HttpResponse("方法错误")
 
+#新增模块
 def add_article(request):
     auth_res = user_auth(request)
     if auth_res == "auth_fail":
@@ -49,6 +51,7 @@ def add_article(request):
         else:
             return HttpResponse("方法错误，你应该使用POST请求方式")
 
+#更新模块
 def modify_article(request,article_id):
     auth_res = user_auth(request)
     if auth_res == "auth_fail":
@@ -104,7 +107,8 @@ def test_api(request):
         return HttpResponse("方法错误")
 
 # 用户认证
-# 四个简单的接口已经可以运行了，但是在发请求之前没有进行鉴权，毫无安全性可言。下面来实现简单的认证机制。需要用到内建模块hashlib，hashlib提供了常见的摘要算法，如MD5，SHA1等。
+# 四个简单的接口已经可以运行了，但是在发请求之前没有进行鉴权，毫无安全性可言。
+# 下面来实现简单的认证机制。需要用到内建模块hashlib，hashlib提供了常见的摘要算法，如MD5，SHA1等。
 def user_auth(request):
     token = request.META.get("HTTP_X_TOKEN", b'')
     print("token: ", token)
